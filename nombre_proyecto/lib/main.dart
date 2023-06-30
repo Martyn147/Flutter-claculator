@@ -87,17 +87,38 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       double value = double.tryParse(_displayText) ?? 0.0;
       double radians = value * (pi / 180); // Convert degrees to radians
 
+      String result;
       switch (function) {
         case 'sin':
-          _displayText = sin(radians).toString();
+          result = 'sin($value°) = ${sin(radians)}';
           break;
         case 'cos':
-          _displayText = cos(radians).toString();
+          result = 'cos($value°) = ${cos(radians)}';
           break;
         case 'tan':
-          _displayText = tan(radians).toString();
+          result = 'tan($value°) = ${tan(radians)}';
           break;
+        default:
+          result = 'Invalid function';
       }
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(function.toUpperCase()),
+            content: Text(result),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
     });
   }
 
@@ -258,7 +279,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             primary: color,
           ),
           child: Text(
-            text,
+            text.toUpperCase(),
             style: TextStyle(fontSize: 24.0, color: Colors.white),
           ),
         ),
@@ -267,29 +288,28 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   }
 
   Widget _buildClearButton() {
-    return Container(
-      width: double.infinity,
-      height: 80.0,
-      child: ElevatedButton(
-        onPressed: _onClearPress,
-        style: ElevatedButton.styleFrom(
-          primary: Colors.blue,
-        ),
-        child: Text(
-          'Clear',
-          style: TextStyle(fontSize: 24.0, color: Colors.white),
+    return Expanded(
+      child: Container(
+        height: 80.0,
+        child: ElevatedButton(
+          onPressed: _onClearPress,
+          style: ElevatedButton.styleFrom(
+            primary: Colors.grey,
+          ),
+          child: Text(
+            'CLEAR',
+            style: TextStyle(fontSize: 24.0, color: Colors.white),
+          ),
         ),
       ),
     );
   }
 
   String _getDisplayOperation() {
-    String operation = '';
-
-    if (_firstOperand != null && _operator != null) {
-      operation = '$_firstOperand $_operator ';
+    if (_firstOperand != null && _secondOperand != null && _operator != null) {
+      return '$_firstOperand $_operator $_secondOperand';
+    } else {
+      return '';
     }
-
-    return operation;
   }
 }
